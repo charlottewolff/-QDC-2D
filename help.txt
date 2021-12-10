@@ -1,0 +1,48 @@
+------      HELP      -----
+STEP;1      ------- Create joints
+           METHOD;draw          -------Draw joints on an image
+                                --INPUT
+                                --OUTPUT
+                                --SCALE
+           METHOD;synthetic     -------Create synthetic joints
+                                --TABLE
+                                --OUTPUT
+           METHOD;plot     -------Plot joints 
+                                --INPUT
+---------
+STEP;2      ------- Classify joints
+           METHOD;hough         -------Classify with Hough method
+           METHOD;histo         -------Classify based on histograms
+---------
+STEP;3      ------- Analyse 1 jointset
+           METHOD;hough          -------Spacing computed with Hough frame
+                                 --INPUT
+           METHOD;linear         -------Spacing computed with linear scanline
+                                 --INPUT 
+                                 --NORTH(opt)
+           METHOD;parallelLinear -------Spacing computed withseveral parallel linear scanlines
+                                 --INPUT 
+                                 --NORTH(opt)
+           METHOD;persistence    -------Compute persistence
+                                 --INPUT
+                                 --COVER(opt)
+                                 --COVER;0 (to draw the rectangle)
+           METHOD;wavelet    -------Compute wavelet transform for the spacing
+                                 --INPUT
+                                 --SCANS
+                                 --DX
+                                 --DY
+---------
+STEP;4      ------- Analyse jointing degree
+           METHOD;circular        -------Analyse jointset with circular scanline
+                                  --INPUT 
+                                  --CIRCLES 
+           METHOD;volume          -------Compute block volume and joint count
+                                  --JOINTS;name(j1);orientation;spacing 
+                                  --JOINTS;name(j2);orientation;spacing 
+                                  --JOINTS;name(j3);orientation;spacing 
+
+---------
+NOTE 
+SYNTHETIC;bool to specify if synthetic dataset. (Not mandatory)
+If 1, observation window will be defined 

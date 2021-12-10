@@ -1,0 +1,12 @@
+STEP;-h
+METHOD;linear
+INPUT;path\strati_Geol.txt
+THETA;10
+SCALE;10
+OUTPUT;path\test.txt
+COVER;0.8
+JOINT;j1;10;5
+JOINT;j2;40;10
+JOINT;j2;100;10
+CIRCLES;3
+TABLE;path\TEMPLATES\examples\wantedJoints.txt

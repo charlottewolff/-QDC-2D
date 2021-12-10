@@ -1,0 +1,4 @@
+name	nb_joints	orientation	std	mean_traceLength	mean_spacing
+j1	50	75	10	1	1
+j2	30	100	7	0.7	1
+j3	70	120	5	0.8	1

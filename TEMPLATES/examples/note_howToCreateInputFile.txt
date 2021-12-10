@@ -1,0 +1,8 @@
+-----    To create input file to run the script (QGIS)    -----
+
+1-- Create shapefile with the polyline in QGIS
+2-- Use field calculator to populate id column with @row_number 
+3-- In vector-->Geometry tools-->Extract vertices, create the file with the extremities of each polyline
+4-- Remove unused columns the attribute table (keep id)
+5-- Add 2 new fields in attribute table using field calculator :  @x (x coordinate of the point) and @y (y coordinate of the point)
+6-- Export the attribute table 
