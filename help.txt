@@ -37,6 +37,7 @@ STEP;4      ------- Analyse jointing degree
            METHOD;circular        -------Analyse jointset with circular scanline
                                   --INPUT 
                                   --CIRCLES 
+                                  --MASKS (to apply a mask bool 0/1 or path to the mask)
            METHOD;volume          -------Compute block volume and joint count
                                   --JOINTS;name(j1);orientation;spacing 
                                   --JOINTS;name(j2);orientation;spacing 

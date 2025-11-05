@@ -1,8 +1,9 @@
-STEP;-h
-METHOD;linear
-INPUT;path\strati_Geol.txt
+STEP;3
+METHOD;circular
+INPUT;C:\Users\charl\Desktop\-QDC-2D-main\QDC-2D\TEMPLATES\examples\Lukacic_real_j1.txt
 THETA;10
 SCALE;10
+MASK;C:\Users\charl\Desktop\-QDC-2D-main\QDC-2D\TEMPLATES\examples\Lukacic_real_j1_MASK.txt
 OUTPUT;path\test.txt
 COVER;0.8
 JOINT;j1;10;5

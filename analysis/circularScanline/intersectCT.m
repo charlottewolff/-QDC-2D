@@ -13,7 +13,7 @@ function [xTC,yTC,k] = intersectCT(x_1,x_2,y_1,y_2,r,lT,xTC,yTC,k,int)
     y  = (-D.*dx+int*abs(dy).*sqrt(r.^2.*d.^2-D.^2))./d.^2;
     %CHECK IF xTC ON THE JOINTS
     for i=1:length(lT)
-        if(isreal(x(i))==1)
+        if(isreal(x(i)) == 1)
             %distance intersection point/middle of segment 
             d=sqrt((real(x(i))-mean([x_2(i) x_1(i)],2)).^2+(real(y(i))-mean([y_2(i) y_1(i)],2)).^2);
             if(d<0.5*lT(i)) % the intersection point is on the segment 

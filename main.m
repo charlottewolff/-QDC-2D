@@ -10,7 +10,7 @@ close all
 % end
 
 % template.path = '1';
-template.fullpath = 'C:\Users\charl\OneDrive\Bureau\RISK\jointAnalyse_cleaned\TEMPLATE.txt';
+template.fullpath = 'C:\Users\charl\Desktop\-QDC-2D-main\QDC-2D\TEMPLATE.txt';
 % template.file = '2';
 
 %% Read template file
@@ -50,6 +50,8 @@ while ~feof(fid)
              template.SCANS = round(str2double(line{2})); 
           case 'THETA'
              template.THETA = round(str2double(line{2}));  
+          case 'MASK'
+              template.MASK = (line{2});
           case 'JOINT'
              if length(line)<4
                  warning('Missing information. Needed : JOINT;name;orientation;spacing')
