@@ -21,10 +21,10 @@ function [intensity_estimator, density_estimator, traceLength_estimator] = circu
 %      ymin = window.minY;
 %      ymax = window.maxY;
 
-     xmin = min(cellfun(@(v) min(v(:)), nodes.x));
-     xmax = max(cellfun(@(v) min(v(:)), nodes.x));
-     ymin = min(cellfun(@(v) min(v(:)), nodes.y));
-     ymax = max(cellfun(@(v) min(v(:)), nodes.y));
+     xmin = min(cellfun(@(v) min(v(:)), nodes.x))
+     xmax = max(cellfun(@(v) max(v(:)), nodes.x))
+     ymin = min(cellfun(@(v) min(v(:)), nodes.y))
+     ymax = max(cellfun(@(v) max(v(:)), nodes.y))
            
      %% Create circles
      dx      = max((xmax-xmin),(ymax-ymin))/(nbCircles-1); % interval/diameter of circles

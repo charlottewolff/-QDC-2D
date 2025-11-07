@@ -1,9 +1,9 @@
 STEP;3
 METHOD;circular
-INPUT;C:\Users\charl\Desktop\-QDC-2D-main\QDC-2D\TEMPLATES\examples\Lukacic_real_j1.txt
+INPUT;C:\Users\charl\Desktop\-QDC-2D-main\QDC-2D\TEMPLATES\examples\syntetic_traces_QDC_new.txt
 THETA;10
 SCALE;10
-MASK;C:\Users\charl\Desktop\-QDC-2D-main\QDC-2D\TEMPLATES\examples\Lukacic_real_j1_MASK.txt
+MASK;0
 OUTPUT;path\test.txt
 COVER;0.8
 JOINT;j1;10;5
