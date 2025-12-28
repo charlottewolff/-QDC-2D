@@ -2,8 +2,10 @@ function [intensity_estimator, density_estimator, traceLength_estimator] = circu
     [~, id_x1x2y1y2_matrice] = polylines_to_lines(nodes); %plot polylines
     
     %% Trace length
-    id_x1x2y1y2_matrice(:,1) = [];
-    x  = [id_x1x2y1y2_matrice(:,1) id_x1x2y1y2_matrice(:,2)];
+    poly_id = id_x1x2y1y2_matrice(:,1); 	% Save polyline IDs before removing
+	id_x1x2y1y2_matrice(:,1) = [];
+    
+	x  = [id_x1x2y1y2_matrice(:,1) id_x1x2y1y2_matrice(:,2)];
     dx = x(:,1)-x(:,2);
     y  = [id_x1x2y1y2_matrice(:,3) id_x1x2y1y2_matrice(:,4)];
     dy = y(:,1)-y(:,2);
@@ -12,13 +14,38 @@ function [intensity_estimator, density_estimator, traceLength_estimator] = circu
     x2 = x(:,2);
     y1 = y(:,1);
     y2 = y(:,2);
-    
+    	
+	    % Bounding box from traces
+    xmin_tr = min(cellfun(@(v) min(v(:)), nodes.x));
+    xmax_tr = max(cellfun(@(v) max(v(:)), nodes.x));
+    ymin_tr = min(cellfun(@(v) min(v(:)), nodes.y));
+    ymax_tr = max(cellfun(@(v) max(v(:)), nodes.y));
+	
      %% Extend of the drawing window
-     xmin = min(cellfun(@(v) min(v(:)), nodes.x));
-     xmax = max(cellfun(@(v) max(v(:)), nodes.x));
-     ymin = min(cellfun(@(v) min(v(:)), nodes.y));
-     ymax = max(cellfun(@(v) max(v(:)), nodes.y));
-           
+     %xmin = min(cellfun(@(v) min(v(:)), nodes.x));
+     %xmax = max(cellfun(@(v) max(v(:)), nodes.x));
+     %ymin = min(cellfun(@(v) min(v(:)), nodes.y));
+     %ymax = max(cellfun(@(v) max(v(:)), nodes.y));
+    
+	% Default bounding box is traces
+    xmin = xmin_tr;
+    xmax = xmax_tr;
+    ymin = ymin_tr;
+    ymax = ymax_tr;      
+	 
+    % If mask exists AND has fields, expand bounding box
+    if mask.bool > 0 && isfield(mask,'X_mask') && isfield(mask,'Y_mask')
+        xmin_mk = min(mask.X_mask);
+        xmax_mk = max(mask.X_mask);
+        ymin_mk = min(mask.Y_mask);
+        ymax_mk = max(mask.Y_mask);
+
+        xmin = min(xmin_tr, xmin_mk);
+        xmax = max(xmax_tr, xmax_mk);
+        ymin = min(ymin_tr, ymin_mk);
+        ymax = max(ymax_tr, ymax_mk);
+    end
+	 
      %% Create circles
      dx      = max((xmax-xmin),(ymax-ymin))/(nbCircles-1); % interval/diameter of circles
      [xw,yw] = meshgrid((xmin+dx/2):dx/2:(xmax),(ymin+dx/2):dx/2:(ymax));% mesh of circles
@@ -44,7 +71,16 @@ function [intensity_estimator, density_estimator, traceLength_estimator] = circu
             h = drawpolygon('Position',[mask.X_mask(:), mask.Y_mask(:)]);
             isInside = inpolygon(xw, yw, mask.X_mask, mask.Y_mask);
     end
-    nb_circles = sum(isInside);  
+    nb_circles = sum(isInside); 
+
+	maskOutlineX = [];
+    maskOutlineY = [];
+    if mask.bool > 0 && isfield(mask,'X_mask') && isfield(mask,'Y_mask')
+        maskOutlineX = mask.X_mask(:);
+        maskOutlineY = mask.Y_mask(:);
+    end
+
+	
     %% Analysis
     for nc = 1:length(xw) %Analysis for each circle
         if isInside(nc)
@@ -58,8 +94,8 @@ function [intensity_estimator, density_estimator, traceLength_estimator] = circu
             y_1         = y1-yc;
             y_2         = y2-yc;
             
-            result = circleAnalysis(x_1, x_2, y_1, y_2, R);
-            
+            result = circleAnalysis(x_1, x_2, y_1, y_2, R, poly_id);
+
             %% Plotting coordinates
             %1- Circles
             s.xC{nc}    = xc+R*cos(0:2*pi/100:2*pi); 
@@ -79,7 +115,9 @@ function [intensity_estimator, density_estimator, traceLength_estimator] = circu
             %5- Counts
             s.count{nc} = [result.n_intersections, result.n_inside_points, result.total_length];
             %6- Tracelength
-            s.total_length{nc} = result.total_length;     
+            s.total_length{nc} = result.total_length;   
+			%7- Polyline count			
+			s.poly_count{nc} = result.n_polylines_inside; 			
         end
     end
 
@@ -90,6 +128,7 @@ function [intensity_estimator, density_estimator, traceLength_estimator] = circu
     intensity_vect      = NaN(1,length(xw));
     density_vect        = NaN(1,length(xw));
     total_length_vect   = NaN(1,length(xw));
+	polyline_count_vect = NaN(1,length(xw));
     figure(1),clf
 %     axis equal
     hold on
@@ -101,6 +140,7 @@ function [intensity_estimator, density_estimator, traceLength_estimator] = circu
             intensity_vect(c)   = s.count{c}(1);
             density_vect(c)     = s.count{c}(2);
             total_length_vect(c)     = s.total_length{c}; 
+			polyline_count_vect(c) = s.poly_count{c};
             
             plot(xw(c),yw(c),'kx');                                         %plot circle center
             if(intensity_vect(c)+density_vect(c)>0)                         %if points within/intersect the circle
@@ -137,10 +177,28 @@ function [intensity_estimator, density_estimator, traceLength_estimator] = circu
     fprintf('Mean intensity estimator : %f\n', intensity_estimator);
     fprintf('Mean density estimator : %f\n', density_estimator);
     fprintf('Mean trace length estimator : %f\n', traceLength_estimator);
+	
+	valid_idx = ~isnan(total_length_vect);
+    if any(valid_idx)
+        fprintf('Mean intensity - method 2 : %f\n', mean(total_length_vect(valid_idx)./(pi*R^2)));
+    else
+        fprintf('Mean intensity - method 2 : NaN (no valid circles)\n');
+    end
+
+    valid_idx2 = ~isnan(polyline_count_vect);
+    if any(valid_idx2)
+        fprintf('Mean apparent density : %f\n', mean(polyline_count_vect(valid_idx2)));
+    else
+        fprintf('Mean apparent density : NaN (no valid circles)\n');
+    end
+	
     disp('-----------------------')
     fprintf('Mean/std intensity : %f / %f\n', mean((intensity_vect / (4*R)),'omitnan'), std((intensity_vect / (4*R)),'omitnan'))
     fprintf('Mean/std density : %f / %f\n', mean((density_vect / (2*pi*(R^2))),'omitnan'), std((density_vect / (2*pi*(R^2))),'omitnan'))
     
+	if ~isempty(maskOutlineX)
+        plot(maskOutlineX,maskOutlineY,'k-','LineWidth',2)
+    end
     plot_Map_densityIntensity(xw,yw,intensity_vect,density_vect,total_length_vect,dx,R)
 
 end

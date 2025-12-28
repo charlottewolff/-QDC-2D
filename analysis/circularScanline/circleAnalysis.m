@@ -1,10 +1,11 @@
-function result = circleAnalysis(x1, x2, y1, y2, R)
+function result = circleAnalysis(x1, x2, y1, y2, R, poly_id)
 % SEGMENTS_IN_CIRCLE analyse les intersections de segments avec un cercle centré en (0,0)
 %
 % Entrées :
 %   x1, y1 : coordonnées des débuts de segments (vecteurs)
 %   x2, y2 : coordonnées des fins de segments (vecteurs)
 %   R      : rayon du cercle
+%   poly_id: identifiant du polyligne auquel chaque segment appartient
 %
 % Sorties (dans la structure "result") :
 %   result.intersections     = [xi, yi] des points d'intersection avec le cercle
@@ -13,12 +14,17 @@ function result = circleAnalysis(x1, x2, y1, y2, R)
 %   result.n_intersections   = nombre total de points d'intersection
 %   result.n_inside_points   = nombre total de points d'extrémité dans le cercle
 %   result.total_length      = somme des longueurs à l’intérieur du cercle
+%   result.n_polylines_inside = nombre de polylignes distincts touchant le cercle
 
 % ---- Initialisation ----
 n = numel(x1);
 intersections = [];
 inside_points = [];
 lengths_inside = zeros(n,1);
+
+% Track polylines touching circle 
+maxID = max(poly_id);
+poly_hits = false(maxID,1);   % poly_hits(i) = true if polyline i touches circle
 
 for i = 1:n
     xA = x1(i);  yA = y1(i);
@@ -81,6 +87,11 @@ for i = 1:n
     else
         lengths_inside(i) = 0;
     end
+	
+	% Mark polyline if ANY interaction happens ----
+    if (~isempty(t_valid)) || distA <= R || distB <= R
+        poly_hits(poly_id(i)) = true;
+    end
 end
 
 % ---- Résultats ----
@@ -90,6 +101,7 @@ result.lengths_inside  = lengths_inside;
 result.n_intersections = size(intersections,1);
 result.n_inside_points = size(inside_points,1);
 result.total_length    = sum(lengths_inside);
+result.n_polylines_inside   = sum(poly_hits);
 end
 
 
